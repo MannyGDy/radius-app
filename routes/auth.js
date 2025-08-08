@@ -2,6 +2,40 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const db = require('../config/database');
+const radiusClient = require('../config/radius');
+
+// RADIUS Authentication Helper Function
+async function authenticateWithRadius(username, password) {
+    try {
+        // First, verify the user exists in our database
+        const user = await db.query(
+            'SELECT * FROM radcheck WHERE username = $1 AND attribute = $2',
+            [username, 'Cleartext-Password']
+        );
+
+        if (user.rows.length === 0) {
+            return { success: false, error: 'User not found' };
+        }
+
+        // Verify password
+        if (user.rows[0].value !== password) {
+            return { success: false, error: 'Invalid password' };
+        }
+
+        // Now authenticate with the actual RADIUS server
+        const radiusResult = await radiusClient.authenticate(username, password);
+        
+        if (!radiusResult.success) {
+            console.error('RADIUS authentication failed:', radiusResult.error);
+            return { success: false, error: 'RADIUS authentication failed' };
+        }
+
+        return { success: true, user: user.rows[0], radiusMessage: radiusResult.message };
+    } catch (error) {
+        console.error('RADIUS authentication error:', error);
+        return { success: false, error: 'Authentication failed' };
+    }
+}
 
 // User Registration
 router.post('/register', async (req, res) => {
@@ -22,9 +56,6 @@ router.post('/register', async (req, res) => {
         if (existingUser.rows.length > 0) {
             return res.status(400).json({ error: 'User already exists' });
         }
-
-        // Hash the phone number (password)
-        const hashedPassword = await bcrypt.hash(phoneNumber, 10);
 
         // Insert into radcheck table (FreeRADIUS authentication)
         await db.query(
@@ -62,19 +93,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Username and password are required' });
         }
 
-        // Check if user exists in radcheck
-        const user = await db.query(
-            'SELECT * FROM radcheck WHERE username = $1 AND attribute = $2',
-            [username, 'Cleartext-Password']
-        );
+        // Authenticate with RADIUS
+        const authResult = await authenticateWithRadius(username, password);
 
-        if (user.rows.length === 0) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        // Verify password
-        if (user.rows[0].value !== password) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+        if (!authResult.success) {
+            return res.status(401).json({ error: authResult.error });
         }
 
         // Set session
@@ -85,7 +108,8 @@ router.post('/login', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Login successful'
+            message: 'Login successful. You can now access the internet.',
+            instructions: 'Try accessing any website to test your connection.'
         });
 
     } catch (error) {
