@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Portal - Connect to Internet</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section" id="welcomeSection">
+            <div class="logo">
+                <i class="fas fa-wifi"></i>
+                <h1>WiFi Portal</h1>
+            </div>
+            <p class="welcome-text">Welcome! Please connect to access the internet</p>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showRegistration()">
+                    <i class="fas fa-user-plus"></i>
+                    Register
+                </button>
+                <button class="btn btn-secondary" onclick="showLogin()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </button>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="form-section" id="registrationSection" style="display: none;">
+            <div class="form-header">
+                <button class="back-btn" onclick="showWelcome()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Create Account</h2>
+            </div>
+            <form id="registrationForm" class="form">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" name="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </button>
+            </form>
+        </div>
+
+        <!-- Login Form -->
+        <div class="form-section" id="loginSection" style="display: none;">
+            <div class="form-header">
+                <button class="back-btn" onclick="showWelcome()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Login</h2>
+            </div>
+            <form id="loginForm" class="form">
+                <div class="form-group">
+                    <label for="loginUsername">Email Address</label>
+                    <input type="email" id="loginUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Phone Number</label>
+                    <input type="tel" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </button>
+            </form>
+        </div>
+
+        <!-- Success Section -->
+        <div class="success-section" id="successSection" style="display: none;">
+            <div class="success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Welcome!</h2>
+                <p id="successMessage">You are now connected to the internet.</p>
+                <div class="credentials" id="credentials" style="display: none;">
+                    <h3>Your Login Credentials:</h3>
+                    <div class="credential-item">
+                        <strong>Username:</strong> <span id="credUsername"></span>
+                    </div>
+                    <div class="credential-item">
+                        <strong>Password:</strong> <span id="credPassword"></span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
