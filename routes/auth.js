@@ -128,4 +128,26 @@ router.post('/logout', (req, res) => {
     });
 });
 
+// Test RADIUS configuration
+router.get('/test-radius', async (req, res) => {
+    try {
+        const result = await radiusClient.testConnection();
+        res.json({
+            success: true,
+            radiusTest: result,
+            config: {
+                server: radiusClient.server,
+                port: radiusClient.port,
+                secretConfigured: !!radiusClient.secret
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            error: 'RADIUS test failed',
+            details: error.message 
+        });
+    }
+});
+
 module.exports = router;
